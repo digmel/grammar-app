@@ -15,8 +15,8 @@ export default function Home() {
     setShowHint(false);
     setIsDisabled(true);
 
-    // fetch(`${process.env.NEXT_PUBLIC_CUSTOM_DOMAIN}/api/hello`, {
-    fetch(`https://fix3dprint.com/api/hello`, {
+    fetch(`/api/hello`, {
+      // fetch(`https://fix3dprint.com/api/hello`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
