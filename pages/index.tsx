@@ -1,3 +1,4 @@
+import { Configuration, OpenAIApi } from "openai";
 import React, { useState } from "react";
 import { Layout } from "../components";
 
@@ -10,26 +11,53 @@ export default function Home() {
 
   const [isDisabled, setIsDisabled] = useState(false);
 
-  const getText = async () => {
+  const generateTexts = async () => {
     setInitialText("");
     setShowHint(false);
     setIsDisabled(true);
 
-    fetch(`./api/hello`, {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        const data = JSON.parse(res?.result);
+    const configuration = new Configuration({
+      apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+    });
+    const openai = new OpenAIApi(configuration);
 
-        setInitialText(data?.incorrect);
-        setHint(data?.hint);
-        setCorrectText(data?.corrected);
+    try {
+      const completion = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content: `return json file with "incorrect", "hint", and "corrected" keys. "incorrect" should be one interesting sentence but grammatically wrong with multiple mistakes, chose advanced grammatical mistakes such as conditional statements, complex tenses, misused phrasal verbs, missed punctuation and etc, "hint" should be a little hint about what was wrong with "incorrect", and "corrected" should be exact sentence with correct grammar.`,
+          },
+        ],
       });
+
+      const result = completion.data.choices[0].message?.content;
+
+      const data = JSON.parse(result as string);
+
+      setInitialText(data?.incorrect);
+      setHint(data?.hint);
+      setCorrectText(data?.corrected);
+    } catch ({ message }) {
+      console.log("Error when generate texts: ", message);
+    }
+
+    // fetch(`./api/hello`, {
+    //   method: "GET",
+    //   mode: "cors",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // })
+    //   .then((res) => res.json())
+    //   .then((res) => {
+    //     const data = JSON.parse(res?.result);
+
+    //     setInitialText(data?.incorrect);
+    //     setHint(data?.hint);
+    //     setCorrectText(data?.corrected);
+    //   });
   };
 
   const getExplanation = () => {
@@ -59,7 +87,7 @@ export default function Home() {
         </h1>
         <button
           disabled={isDisabled}
-          onClick={getText}
+          onClick={generateTexts}
           className="bg-blue-400 py-2 px-8 hover:opacity-70 mb-8 rounded disabled:pointer-events-none disabled:opacity-50"
         >
           Generate
