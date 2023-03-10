@@ -1,0 +1,73 @@
+name: pipeline
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # Build the App
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.1
+
+      - name: Set up Node.js v16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Install
+        run: |
+          if [ -e yarn.lock ]; then
+            yarn install --frozen-lockfile
+          elif [ -e package-lock.json ]; then
+            npm ci
+          else
+            npm i
+          fi
+
+      - name: Build
+        run: |
+          npm run build
+          npm run export
+          touch ./out/.nojekyll
+          echo ${{ env.DOMAIN }} > ./out/CNAME
+        env:
+          NOTION_ACCESS_TOKEN: ${{ secrets.NOTION_ACCESS_TOKEN }}
+          NOTION_BLOG_DATABASE_ID: ${{ secrets.NOTION_BLOG_DATABASE_ID }}
+          DOMAIN: ${{ secrets.CUSTOM_DOMAIN }}
+
+      - name: Set status
+        if: github.event_name == 'pull_request'
+        uses: EndBug/add-and-commit@v7.0.0
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./out
+
+  # Deployment
+  deploy:
+    environment:
+      name: github-pages
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        if: github.event_name != 'pull_request'
+        id: deployment
+        uses: actions/deploy-pages@v1
