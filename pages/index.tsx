@@ -17,7 +17,8 @@ export default function Home() {
     setIsDisabled(true);
 
     const configuration = new Configuration({
-      apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+      apiKey: "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",
+      // apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
     });
     const openai = new OpenAIApi(configuration);
 
