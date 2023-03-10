@@ -15,7 +15,7 @@ export default function Home() {
     setShowHint(false);
     setIsDisabled(true);
 
-    fetch("http://localhost:3000/api/hello", {
+    fetch(`${process.env.NEXT_PUBLIC_CUSTOM_DOMAIN}/api/hello`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
