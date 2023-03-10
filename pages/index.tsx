@@ -15,8 +15,7 @@ export default function Home() {
     setShowHint(false);
     setIsDisabled(true);
 
-    fetch(`/api/hello`, {
-      // fetch(`https://fix3dprint.com/api/hello`, {
+    fetch(`./api/hello`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
