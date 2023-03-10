@@ -17,6 +17,7 @@ export default function Home() {
 
     fetch(`./api/hello`, {
       method: "GET",
+      mode: "cors",
       headers: {
         "Content-Type": "application/json",
       },
@@ -97,7 +98,12 @@ export default function Home() {
 
         <div className="bg-gray-100 rounded">
           {showHint && (
-            <p className="w-3/4 py-3 px-4 text-gray-600 text-thin">{hint}</p>
+            <>
+              <p className="w-3/4 py-3 px-4 text-gray-600 text-thin">{hint}</p>
+              <p className="w-3/4 py-3 px-4 text-gray-600 text-thin">
+                {correctText}
+              </p>
+            </>
           )}
         </div>
       </div>
