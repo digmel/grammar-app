@@ -17,7 +17,6 @@ export default function Home() {
 
     fetch("http://localhost:3000/api/hello", {
       method: "GET",
-      mode: "no-cors",
       headers: {
         "Content-Type": "application/json",
       },
