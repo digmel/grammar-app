@@ -43,6 +43,7 @@ export default function Home() {
       console.log("Error when generate texts: ", message);
     }
 
+    // TODO: implement protective API route.
     // fetch(`./api/hello`, {
     //   method: "GET",
     //   mode: "cors",
@@ -88,10 +89,12 @@ export default function Home() {
         <button
           disabled={isDisabled}
           onClick={generateTexts}
-          className="bg-blue-400 py-2 px-8 hover:opacity-70 mb-8 rounded disabled:pointer-events-none disabled:opacity-50"
+          className="bg-blue-400 py-2 px-8 hover:opacity-70 mb-4 rounded disabled:pointer-events-none disabled:opacity-50"
         >
           Generate
         </button>
+
+        <p className="pb-4 font-thin">{initialText}</p>
         {/* 
         {statusText.length > 0 && (
           <p className="text-blue-400 pb-4">{statusText}</p>
@@ -102,7 +105,8 @@ export default function Home() {
             autoFocus
             rows={5}
             cols={100}
-            value={initialText}
+            placeholder="Write corrected sentence here..."
+            // value={initialText}
             className="w-full px-3 py-2 max-w-lg text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline resize-none min-h-32 sm:min-h-48 md:min-h-64"
             onChange={(e) => setInitialText(e.target.value)}
           />
