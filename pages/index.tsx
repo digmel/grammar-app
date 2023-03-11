@@ -16,6 +16,7 @@ export default function Home() {
 
   const generateTexts = async () => {
     setInitialText("");
+    setCorrectedText("");
     setShowHint(false);
 
     const configuration = new Configuration({
