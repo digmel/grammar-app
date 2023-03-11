@@ -1,20 +1,22 @@
 import { Configuration, OpenAIApi } from "openai";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Layout } from "../components";
 
 export default function Home() {
   const [initialText, setInitialText] = useState("");
   const [hint, setHint] = useState("");
   const [correctText, setCorrectText] = useState("");
+  const [correctedText, setCorrectedText] = useState("");
 
   const [showHint, setShowHint] = useState(false);
 
-  const [isDisabled, setIsDisabled] = useState(false);
+  useEffect(() => {
+    generateTexts();
+  }, []);
 
   const generateTexts = async () => {
     setInitialText("");
     setShowHint(false);
-    setIsDisabled(true);
 
     const configuration = new Configuration({
       apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -67,14 +69,13 @@ export default function Home() {
 
   const onSubmit = () => {
     console.log("Correct Answer: ", correctText);
-    const temp1 = initialText.replace(/\s+/g, "").toLowerCase();
+    const temp1 = correctedText.replace(/\s+/g, "").toLowerCase();
     const temp2 = correctText.replace(/\s+/g, "").toLowerCase();
 
     if (temp1 === temp2) {
       alert("Yey, Correct!");
-      setIsDisabled(false);
+      generateTexts();
     } else {
-      setIsDisabled(true);
       alert("Not quite correct, try again!");
     }
   };
@@ -82,19 +83,21 @@ export default function Home() {
   return (
     <Layout title="home">
       <div className=" mx-4 flex flex-col items-center mt-4 md:mt-12 ">
-        <h1 className="mb-8 font-thin text-gray-600">
-          App will generate grammatically wrong random sentence, so that you can
-          practice to make it correct!
+        <h1 className="mb-8 font-thin text-gray-600 text-center">
+          App is designed to generate random sentences with grammatical errors,
+          giving you an opportunity to practice your skills in correcting them!
         </h1>
-        <button
+        {/* <button
           disabled={isDisabled}
           onClick={generateTexts}
           className="bg-blue-400 py-2 px-8 hover:opacity-70 mb-4 rounded disabled:pointer-events-none disabled:opacity-50"
         >
           Generate
-        </button>
+        </button> */}
 
-        <p className="pb-4 font-thin">{initialText}</p>
+        <div className="bg-yellow-100 mb-4 rounded-2xl">
+          <p className="px-4 py-4 font-thin">{initialText}</p>
+        </div>
         {/* 
         {statusText.length > 0 && (
           <p className="text-blue-400 pb-4">{statusText}</p>
@@ -108,7 +111,7 @@ export default function Home() {
             placeholder="Write corrected sentence here..."
             // value={initialText}
             className="w-full px-3 py-2 max-w-lg text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline resize-none min-h-32 sm:min-h-48 md:min-h-64"
-            onChange={(e) => setInitialText(e.target.value)}
+            onChange={(e) => setCorrectedText(e.target.value)}
           />
 
           <div className="flex flex-row justify-between">
@@ -121,9 +124,9 @@ export default function Home() {
 
             <button
               onClick={onSubmit}
-              className="bg-green-600 py-2 px-8 hover:opacity-70 rounded my-8"
+              className="bg-green-600 px-8 py-2 my-8 hover:opacity-70 rounded disabled:pointer-events-none disabled:opacity-50"
             >
-              Submit
+              Next
             </button>
           </div>
         </div>
