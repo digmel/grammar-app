@@ -1,6 +1,6 @@
-import { Configuration, OpenAIApi } from "openai";
 import React, { useEffect, useState } from "react";
 import { Layout } from "../components";
+import OpenAIApi from "openai";
 
 export default function Home() {
   const [initialText, setInitialText] = useState("");
@@ -11,7 +11,7 @@ export default function Home() {
   const [showHint, setShowHint] = useState(false);
 
   useEffect(() => {
-    generateTexts();
+    // generateTexts();
   }, []);
 
   const generateTexts = async () => {
@@ -19,49 +19,39 @@ export default function Home() {
     setCorrectedText("");
     setShowHint(false);
 
-    const configuration = new Configuration({
+    const openai = new OpenAIApi({
       apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+      dangerouslyAllowBrowser: true
     });
-    const openai = new OpenAIApi(configuration);
 
+    
     try {
-      const completion = await openai.createChatCompletion({
+      const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
           {
-            role: "system",
-            content: `return json file with "incorrect", "hint", and "corrected" keys. "incorrect" should be one interesting sentence but grammatically wrong with multiple mistakes, chose advanced grammatical mistakes such as conditional statements, complex tenses, misused phrasal verbs, missed punctuation and etc, "hint" should be a little hint about what was wrong with "incorrect", and "corrected" should be exact sentence with correct grammar.`,
+            role: "user",
+            content: `return json file with "question", "hint", "variations" and "answer" keys. 
+            "question" should be one interesting sentence but grammatically wrong with multiple mistakes, chose advanced grammatical mistakes such as conditional statements, complex tenses, misused phrasal verbs, missed punctuation and etc, 
+            "hint" should be a little hint about what was wrong with "incorrect", 
+            "answer" should be exact sentence with correct grammar.
+            "variations" should be list of 4 different answer but only one should be correct.`
           },
         ],
       });
+      
+      const result = completion.choices[0].message?.content;
 
-      const result = completion.data.choices[0].message?.content;
+      console.log('first', result)
 
       const data = JSON.parse(result as string);
 
-      setInitialText(data?.incorrect);
+      setInitialText(data?.question);
       setHint(data?.hint);
-      setCorrectText(data?.corrected);
+      setCorrectText(data?.answer);
     } catch ({ message }) {
       console.log("Error when generate texts: ", message);
     }
-
-    // TODO: implement protective API route.
-    // fetch(`./api/hello`, {
-    //   method: "GET",
-    //   mode: "cors",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // })
-    //   .then((res) => res.json())
-    //   .then((res) => {
-    //     const data = JSON.parse(res?.result);
-
-    //     setInitialText(data?.incorrect);
-    //     setHint(data?.hint);
-    //     setCorrectText(data?.corrected);
-    //   });
   };
 
   const getExplanation = () => {
@@ -88,29 +78,16 @@ export default function Home() {
           App is designed to generate random sentences with grammatical errors,
           giving you an opportunity to practice your skills in correcting them!
         </h1>
-        {/* <button
-          disabled={isDisabled}
-          onClick={generateTexts}
-          className="bg-blue-400 py-2 px-8 hover:opacity-70 mb-4 rounded disabled:pointer-events-none disabled:opacity-50"
-        >
-          Generate
-        </button> */}
 
         <div className="bg-yellow-100 mb-4 rounded-2xl">
           <p className="px-4 py-4 font-thin">{initialText}</p>
         </div>
-        {/* 
-        {statusText.length > 0 && (
-          <p className="text-blue-400 pb-4">{statusText}</p>
-        )} */}
-
         <div>
           <textarea
             autoFocus
             rows={5}
             cols={100}
             placeholder="Write corrected sentence here..."
-            // value={initialText}
             className="w-full px-3 py-2 max-w-lg text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline resize-none min-h-32 sm:min-h-48 md:min-h-64"
             onChange={(e) => setCorrectedText(e.target.value)}
           />
