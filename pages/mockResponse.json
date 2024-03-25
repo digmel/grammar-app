@@ -1,0 +1,14 @@
+{
+  "question": "If I would have knew about the meeting, I would has attended it.",
+  "hint": {
+    "hint": "The mistakes are related to verb tenses and conditional statements.",
+    "keywords": ["would have known", "meeting", "has", "attended"]
+  },
+  "variations": {
+    "A": "If I had known about the meeting, I would have attended it.",
+    "B": "If I know about the meeting, I will attend it.",
+    "C": "If I would have known about the meeting, I would attend it.",
+    "D": "If I will has known about the meeting, I would attend it."
+  },
+  "answer": "A"
+}
