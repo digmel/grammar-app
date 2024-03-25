@@ -220,7 +220,7 @@ export default function Home() {
             </List>
           </Box>
 
-          <div className="flex justify-between gap-96">
+          <div className="flex justify-between gap-12 md:gap-96">
             <button
               onClick={getExplanation}
               className="bg-yellow-300 py-2 px-8 hover:bg-opacity-70 my-8 rounded"
