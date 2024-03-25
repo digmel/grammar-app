@@ -66,7 +66,7 @@ export default function Home() {
 
       const response = completion.choices[0].message?.content;
 
-      console.log("response", response);
+      console.log(response);
 
       const data = JSON.parse(response as string);
 
@@ -88,13 +88,13 @@ export default function Home() {
   const onSubmit = (key: string) => {
     setCount(count + 1);
     setUserSelection(key);
-    console.log("Answer: ", key);
+    console.log("Selected Answer: ", key);
 
     if (key === correctText) {
       console.log("Yey, Correct!");
       setCorrectAnswers(correctAnswers + 1);
     } else {
-      console.log("Not quite correct, try again!");
+      console.log("NOT Correct, sorry!");
     }
   };
 
