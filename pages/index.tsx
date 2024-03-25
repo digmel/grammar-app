@@ -55,11 +55,11 @@ export default function Home() {
         messages: [
           {
             role: "user",
-            content: `return json file with "question", "hint", "variations" and "answer" keys.
-            "question" should be one interesting sentence but grammatically wrong with one or multiple mistakes, chose advanced grammatical mistakes focused on tha topic - ${topic},
-            "hint" should be a little hint about what was wrong with "incorrect" with similar simpler example and list of words pointing to the area which needs to be corrected, return single objet with "hint" and "keywords",
-            "variations" should be a list of 4 different answer but only one should be correct. Use prefixes - A, B, C, D, as keys and return single object. Use random correct variants.
-            "answer" should be a correct answer prefix from variations.`,
+            content: `return json file with "question", "hint", "variations" and "answer" keys for English practice quiz.
+            "question" should be one interesting, advanced sentence, but put "____" empty symbol instead of grammatical words, focused on the topic - ${topic},
+            "hint" should be a little hint about how to solve "question" with similar, simpler example and list of clue words to highlight in "question", return single objet with "hint" and "keywords",
+            "variations" should be a list of 4 different answer for "____" empty symbol in "question", but only one should create a fully, grammatically correct sentence. Use prefixes - A, B, C, D, as keys and return single object. Use random correct variants.
+            "answer" should be a correct answer prefix from "variations".`,
           },
         ],
       });
@@ -247,3 +247,14 @@ export default function Home() {
     </Layout>
   );
 }
+
+// messages: [
+//   {
+//     role: "user",
+//     content: `return json file with "question", "hint", "variations" and "answer" keys.
+//     "question" should be one interesting sentence but grammatically wrong with one or multiple mistakes, chose advanced grammatical mistakes focused on tha topic - ${topic},
+//     "hint" should be a little hint about what was wrong with "incorrect" with similar simpler example and list of words pointing to the area which needs to be corrected, return single objet with "hint" and "keywords",
+//     "variations" should be a list of 4 different answer but only one should be correct. Use prefixes - A, B, C, D, as keys and return single object. Use random correct variants.
+//     "answer" should be a correct answer prefix from variations.`,
+//   },
+// ],
