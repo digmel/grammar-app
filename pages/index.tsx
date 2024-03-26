@@ -214,7 +214,17 @@ export default function Home() {
                     )
                   }
                 >
-                  {key}) {item}
+                  <p
+                    className={`${
+                      userSelection !== ""
+                        ? key === correctText
+                          ? "text-green-500"
+                          : "text-red-700"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    {key}) {item}
+                  </p>
                 </List.Item>
               ))}
             </List>
