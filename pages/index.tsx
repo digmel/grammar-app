@@ -57,7 +57,7 @@ export default function Home() {
             role: "user",
             content: `return json file with "question", "hint", "variations" and "answer" keys for English practice quiz.
             "question" should be one interesting, advanced sentence, but put "____" empty symbol instead of grammatical words, focused on the topic - ${topic},
-            "hint" should be a little hint about how to solve "question" with similar, simpler example and list of clue words to highlight in "question", return single objet with "hint" and "keywords",
+            "hint" should be a good, long, explanation in simple words about how to solve "question" with similar example sentence and list of clue words to highlight in "question", return single objet with "hint" and "keywords",
             "variations" should be a list of 4 different answer for "____" empty symbol in "question", but only one should create a fully, grammatically correct sentence. Use prefixes - A, B, C, D, as keys and return single object. Use random correct variants.
             "answer" should be a correct answer prefix from "variations".`,
           },
