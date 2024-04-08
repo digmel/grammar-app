@@ -111,6 +111,8 @@ export default function Home() {
       setCount(0);
       setCorrectAnswers(0);
       setQuestion("");
+      setGuide([]);
+      setTopic("");
     }
   }, [count]);
 
