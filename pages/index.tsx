@@ -24,6 +24,11 @@ import OpenAIApi from "openai";
 
 const topicData = require("./topicsData.json");
 
+const openai = new OpenAIApi({
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
+});
+
 export default function Home() {
   const [question, setQuestion] = useState("");
   const [hint, setHint] = useState("");
@@ -38,16 +43,13 @@ export default function Home() {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [topic, setTopic] = useState<string | null>("");
 
+  const [guide, setGuide] = useState([]);
+
   const getQuestion = async () => {
     setShowResults(false);
     setLoading(true);
     setShowHint(false);
     setUserSelection("");
-
-    const openai = new OpenAIApi({
-      apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-      dangerouslyAllowBrowser: true,
-    });
 
     try {
       const completion = await openai.chat.completions.create({
@@ -111,6 +113,31 @@ export default function Home() {
       setQuestion("");
     }
   }, [count]);
+
+  const handleGuide = async () => {
+    if (topic) {
+      try {
+        const completion = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "user",
+              content: `return explanation of English grammar subject with 5 different examples and explaining rule with everyday language, focused on the topic - ${topic}, use JSON format, return "rules" list about this topic, to explain each rule, use "title" key for rule's title, the "explanation" key for simplified description of what it is and how it works, and the "examples" key with list of 3 different examples where this rule is being implemented.`,
+            },
+          ],
+        });
+
+        const response = completion.choices[0].message?.content;
+
+        console.log("guide", response);
+
+        const data = JSON.parse(response as string);
+        setGuide(data?.rules);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
 
   return (
     <Layout title="home">
@@ -252,6 +279,36 @@ export default function Home() {
               <p className="w-3/4 py-3 px-4 text-gray-600 text-thin">{hint}</p>
             )}
           </div>
+        </div>
+      )}
+
+      {topic != "" && (
+        <div className="mt-8 flex items-center justify-center flex-1 flex-col gap-12">
+          <button
+            onClick={handleGuide}
+            className="bg-sky-500 text-white font-semibold px-6 py-3 my-8 hover:bg-sky-600 rounded-md transition duration-200 ease-in-out disabled:pointer-events-none disabled:bg-sky-300"
+          >
+            Show Topic Rules
+          </button>
+
+          {guide.map((item: any, index: number) => (
+            <div
+              key={index}
+              className="bg-white shadow-md rounded-lg overflow-hidden p-6 space-y-4"
+            >
+              <h3 className="text-xl font-bold text-gray-900">{item?.title}</h3>
+              <p className="text-gray-600">{item?.explanation}</p>
+
+              {item?.examples?.map((example: any, index: number) => (
+                <p
+                  key={index}
+                  className="text-gray-500 text-sm pl-4 border-l-2 border-sky-500"
+                >
+                  {example}
+                </p>
+              ))}
+            </div>
+          ))}
         </div>
       )}
     </Layout>

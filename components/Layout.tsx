@@ -10,7 +10,7 @@ type TLayout = {
 
 export const Layout = ({ children, title }: TLayout) => {
   return (
-    <div className="md:h-screen w-screen md:fixed">
+    <div className="md:h-screen w-screen pb-96">
       <Head>
         <title>{title}</title>
         <meta charSet="utf-8" />
