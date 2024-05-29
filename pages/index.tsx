@@ -16,13 +16,11 @@ import {
   Text,
   Center,
   Select,
+  Divider,
 } from "@mantine/core";
 import { IconCircleDashed, IconCircle } from "@tabler/icons-react";
 import OpenAIApi from "openai";
-
-// const data = require("./mockResponse.json");
-
-const topicData = require("./topicsData.json");
+import DrawerComponent from "../components/Drawer";
 
 const openai = new OpenAIApi({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -42,6 +40,7 @@ export default function Home() {
   const [showResults, setShowResults] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [topic, setTopic] = useState<string | null>("");
+  const [topicID, setTopicID] = useState<string>("");
 
   const [guide, setGuide] = useState([]);
 
@@ -68,8 +67,6 @@ export default function Home() {
 
       const response = completion.choices[0].message?.content;
 
-      console.log(response);
-
       const data = JSON.parse(response as string);
 
       setVariations(data?.variations);
@@ -87,10 +84,35 @@ export default function Home() {
     setShowHint(!showHint);
   };
 
-  const onSubmit = (key: string) => {
+  const onSubmit = async (key: string) => {
     setCount(count + 1);
     setUserSelection(key);
     console.log("Selected Answer: ", key);
+
+    const questionResult = {
+      selectedAnswer: key,
+      correctAnswer: correctText,
+      question: question,
+      variations: variations,
+    };
+
+    if (topic && topicID) {
+      const existedQuestionsJSON = await window.localStorage.getItem(topicID);
+
+      if (existedQuestionsJSON) {
+        const existedQuestions = JSON.parse(existedQuestionsJSON);
+        existedQuestions && existedQuestions.push(questionResult);
+        await window.localStorage.setItem(
+          topicID,
+          JSON.stringify(existedQuestions)
+        );
+      } else {
+        await window.localStorage.setItem(
+          topicID,
+          JSON.stringify([questionResult])
+        );
+      }
+    }
 
     if (key === correctText) {
       console.log("Yey, Correct!");
@@ -115,6 +137,14 @@ export default function Home() {
       setTopic("");
     }
   }, [count]);
+
+  useEffect(() => {
+    if (topic) {
+      let cacheKey = topic.toLowerCase();
+      cacheKey = cacheKey.replace(/[^a-z0-9]+/g, "_");
+      setTopicID(cacheKey);
+    }
+  }, [topic]);
 
   const handleGuide = async () => {
     if (topic) {
@@ -143,20 +173,38 @@ export default function Home() {
 
   return (
     <Layout title="home">
+      <DrawerComponent setTopic={setTopic} />
       <h1 className="mb-8 font-thin text-gray-600 text-center">
         Practice English grammar with AI-powered Grammacho!
       </h1>
 
+      <Center m="lg">{topic && <Text>Topic: {topic}</Text>}</Center>
+
+      <Center m="lg">
+        {topicID && localStorage.getItem(topicID) && (
+          <Text>
+            Score:
+            {JSON?.parse(localStorage.getItem(topicID) ?? "").length}
+          </Text>
+        )}
+      </Center>
+
       {question == "" && !showResults && (
         <Center>
           <Stack>
-            <Select
-              label="Choose grammar problem to practice"
-              placeholder="Pick a topic"
-              data={topicData}
-              searchable
-              onChange={(value) => setTopic(value)}
-            />
+            {topic === null && (
+              <Select
+                label="Choose user"
+                data={["Chimaera", "Bumblebee"]}
+                searchable
+                onChange={(value) =>
+                  window.localStorage.setItem(
+                    "current-user",
+                    JSON.stringify(value)
+                  )
+                }
+              />
+            )}
 
             <Button onClick={() => getQuestion()}>
               {loading && count == 0 ? (
@@ -170,7 +218,7 @@ export default function Home() {
       )}
 
       {showResults && (
-        <Center>
+        <Center mb="xl">
           <Stack>
             <Text>
               Great! You correctly answered{" "}
@@ -183,6 +231,31 @@ export default function Home() {
               Mistakes:{" "}
               <Mark color="red">{localStorage.getItem("wrongAnswers")}</Mark>
             </Text>
+
+            {JSON.parse(localStorage.getItem(topicID) ?? "").map(
+              (item: any, index: any) => (
+                <Stack key={index}>
+                  <Divider />
+                  <Text>{item.question}</Text>
+
+                  <Group>
+                    <Text>Your Selected Answer:</Text>
+                    <Text color="yellow">
+                      {item.variations[item.selectedAnswer]}
+                    </Text>
+                  </Group>
+
+                  <Group>
+                    <Text>Correct Answer:</Text>
+                    <Text color="green">
+                      {item.variations[item.correctAnswer]}
+                    </Text>
+                  </Group>
+
+                  <Divider />
+                </Stack>
+              )
+            )}
             <Button
               onClick={() => {
                 setShowResults(false);
@@ -313,17 +386,8 @@ export default function Home() {
           ))}
         </div>
       )}
+
+      <div style={{ padding: "300px" }}></div>
     </Layout>
   );
 }
-
-// messages: [
-//   {
-//     role: "user",
-//     content: `return json file with "question", "hint", "variations" and "answer" keys.
-//     "question" should be one interesting sentence but grammatically wrong with one or multiple mistakes, chose advanced grammatical mistakes focused on tha topic - ${topic},
-//     "hint" should be a little hint about what was wrong with "incorrect" with similar simpler example and list of words pointing to the area which needs to be corrected, return single objet with "hint" and "keywords",
-//     "variations" should be a list of 4 different answer but only one should be correct. Use prefixes - A, B, C, D, as keys and return single object. Use random correct variants.
-//     "answer" should be a correct answer prefix from variations.`,
-//   },
-// ],
