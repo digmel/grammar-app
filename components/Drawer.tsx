@@ -29,14 +29,14 @@ function DrawerComponent({ setTopic }: any) {
       <Drawer
         opened={opened}
         onClose={close}
-        title={`Welcome ${user}`}
+        title={`Hi there!! Choose topic:`}
         scrollAreaComponent={ScrollArea.Autosize}
       >
         <Stack align="flex-start">{content}</Stack>
       </Drawer>
 
       <Button onClick={open} m="xl">
-        Open drawer
+        Menu
       </Button>
     </>
   );

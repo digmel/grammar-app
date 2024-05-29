@@ -192,21 +192,21 @@ export default function Home() {
       {question == "" && !showResults && (
         <Center>
           <Stack>
-            {topic === null && (
-              <Select
-                label="Choose user"
-                data={["Chimaera", "Bumblebee"]}
-                searchable
-                onChange={(value) =>
-                  window.localStorage.setItem(
-                    "current-user",
-                    JSON.stringify(value)
-                  )
-                }
-              />
-            )}
+            {/* <Select
+              label="Choose user"
+              data={["Chimaera", "Bumblebee"]}
+              searchable
+              onChange={(value) =>
+                window.localStorage.setItem(
+                  "current-user",
+                  JSON.stringify(value)
+                )
+              }
+            /> */}
 
-            <Button onClick={() => getQuestion()}>
+            {!topic && <Text>Please choose topic from Menu</Text>}
+
+            <Button onClick={() => getQuestion()} disabled={!topic}>
               {loading && count == 0 ? (
                 <Loader color="white" type="dots" />
               ) : (
