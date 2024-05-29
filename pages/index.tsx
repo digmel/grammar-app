@@ -135,7 +135,6 @@ export default function Home() {
       setQuestion("");
       setGuide([]);
       setTopic("");
-      setTopicID("");
     }
   }, [count]);
 
