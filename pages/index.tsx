@@ -135,6 +135,7 @@ export default function Home() {
       setQuestion("");
       setGuide([]);
       setTopic("");
+      setTopicID("");
     }
   }, [count]);
 
@@ -204,7 +205,7 @@ export default function Home() {
               }
             /> */}
 
-            {!topic && <Text>Please choose topic from Menu</Text>}
+            {!topic && <Text>Choose a topic from Menu to Start practice</Text>}
 
             <Button onClick={() => getQuestion()} disabled={!topic}>
               {loading && count == 0 ? (
